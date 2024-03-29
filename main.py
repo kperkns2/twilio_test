@@ -14,11 +14,7 @@ def on_click():
 
     st.audio('output.wav')
     
-    
-    cwd = os.getcwd()
-    filename = 'output.wav'
-    full_path = os.path.join(cwd, filename)
-    save_file_to_github(full_path)
+  
 
 st.button("Click to send message!", on_click=on_click)
 

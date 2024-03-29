@@ -7,6 +7,23 @@ import os
 import shutil
 
 
+import streamlit as st
+import json
+from google.oauth2 import service_account
+from google.cloud import storage
+
+# Load the service account key from Streamlit secrets
+gcp_service_account_info = json.loads(st.secrets["gcp_service_account"]["key"])
+
+# Authenticate with the service account
+credentials = service_account.Credentials.from_service_account_info(gcp_service_account_info)
+
+# Now you can use the credentials with Google Cloud Client Libraries
+# For example, initializing the storage client
+storage_client = storage.Client(credentials=credentials, project=credentials.project_id)
+
+
+
 def get_token_dictionary():
   tts_list = requests.get("https://api.fakeyou.com/tts/list")
   tts_list = tts_list.json()
