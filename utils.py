@@ -110,13 +110,15 @@ def save_file_to_github(file_path):
   email = 'kap20k4@gmail.com'
   git_token = st.secrets['git_token']
 
+  # Clone the repository
+  clone_command = f'git clone https://github.com/{username}/{repository}.git'
+  subprocess.run(clone_command, shell=True, check=True)
+
   # Configure git
   subprocess.run(['git', 'config', '--global', 'user.name', username], check=True)
   subprocess.run(['git', 'config', '--global', 'user.email', email], check=True)
 
-  # Clone the repository
-  clone_command = f'git clone https://github.com/{username}/{repository}.git'
-  subprocess.run(clone_command, shell=True, check=True)
+
 
   # Change directory to the cloned repository
   os.chdir(f'./{repository}/')
