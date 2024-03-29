@@ -4,6 +4,7 @@ import uuid
 from tenacity import retry, stop_after_attempt, wait_fixed
 import subprocess
 import os
+import shutil
 
 
 def get_token_dictionary():
