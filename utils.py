@@ -2,6 +2,29 @@ import requests
 import json
 import uuid
 
+
+def get_token_dictionary():
+  tts_list = requests.get("https://api.fakeyou.com/tts/list")
+  tts_list = tts_list.json()
+  all_titles = [t['title'] for t in tts_list['models']]
+
+  # Mapping of human-readable names to full titles
+  title_mapping = {
+      "Donald Trump": "Donald Trump (Sarcastic)",
+      "Morgan Freeman": "Morgan Freeman (New)",
+      "Johnny Cash": "Johnny Cash",
+      "Darth Vader": "Darth Vader (James Earl Jones)",
+      "Frank Sinatra": "Frank Sinatra (Version 2.0)",
+      "Donald Duck": "Donald Duck (Disney) (Tony Anselmo)",
+      "Mr. Fred Rogers": "Mr. Fred Rogers"
+  }
+
+  # Creating a dictionary with specified titles as keys
+  token_dictionary = {name: next((t['model_token'] for t in tts_list['models'] 
+    if t['title'] == title), None) for name, title in title_mapping.items()}
+  return token_dictionary
+
+
 def generate_random_uuid():
     # Generate a random UUID and return it
     return str(uuid.uuid4())
@@ -45,7 +68,9 @@ def fetch_job_result(inference_job_token):
     print(response_data)
     return response_data
 
-def download_wav_if_complete(job_result):
+@retry(stop=stop_after_attempt(15), wait=wait_fixed(3))
+def download_wav_if_complete(inference_job_token):
+    job_result = fetch_job_result(inference_job_token)
     # Check if the job completed successfully
     if job_result.get('success') and job_result['state']['status'] == 'complete_success':
         # Construct the URL to the WAV file
@@ -72,4 +97,5 @@ def download_wav_if_complete(job_result):
                 # Fallback if the response isn't JSON-formatted
                 print(f'Response: {response.text}')
     else:
+        raise Exception("Job not completed yet")
         print('Job is not in complete_success state.')
