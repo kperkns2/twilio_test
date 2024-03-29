@@ -18,7 +18,7 @@ def on_click():
     bucket_id = st.secrets["bucket"]["id"]
     upload_file_to_gcs('output.wav', bucket_id, 'output.wav')
   
-    initiate_call()
+    #initiate_call()
 
 st.button("Click to send message!", on_click=on_click)
 
