@@ -25,25 +25,29 @@ def authenticate_google():
   return storage_client
 
 
-def upload_file_to_gcs(file, bucket_name, destination_blob_name):
+def upload_file_to_gcs(file_path, bucket_name, destination_blob_name):
     """
-    Uploads a file to the specified bucket.
+    Uploads a file from the specified file path to a Google Cloud Storage bucket.
 
-    :param file: The file to upload.
-    :param bucket_name: The ID of your GCS bucket.
-    :param destination_blob_name: The desired name of your file in the bucket.
+    :param file_path: Path to the file to upload.
+    :param bucket_name: ID of the GCS bucket.
+    :param destination_blob_name: The desired name of the file in the bucket.
     """
-    # Authenticate and get the storage client
+    # Assuming you already have an authenticated storage client
     storage_client = authenticate_google()
-    
+
     # Get the bucket
     bucket = storage_client.bucket(bucket_name)
     
-    # Create a new blob and upload the file's content.
+    # Create a new blob and upload the file's content from the file path
     blob = bucket.blob(destination_blob_name)
-    blob.upload_from_string(file.getvalue(), content_type=file.type)
+    blob.upload_from_filename(file_path)
     
-    st.success(f"File {file.name} uploaded to {destination_blob_name}.")
+    # Assuming you'd like to print or return the public URL (if the file is publicly accessible)
+    # Note: Make sure the file is publicly accessible if you need a public URL.
+    # blob.make_public() # Uncomment if the blob should be made public.
+    print(f"File {file_path} uploaded to {destination_blob_name}. Public URL: {blob.public_url}")
+
 
 
 
