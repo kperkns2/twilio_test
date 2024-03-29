@@ -9,15 +9,7 @@ def get_token_dictionary():
   all_titles = [t['title'] for t in tts_list['models']]
 
   # Mapping of human-readable names to full titles
-  title_mapping = {
-      "Donald Trump": "Donald Trump (Sarcastic)",
-      "Morgan Freeman": "Morgan Freeman (New)",
-      "Johnny Cash": "Johnny Cash",
-      "Darth Vader": "Darth Vader (James Earl Jones)",
-      "Frank Sinatra": "Frank Sinatra (Version 2.0)",
-      "Donald Duck": "Donald Duck (Disney) (Tony Anselmo)",
-      "Mr. Fred Rogers": "Mr. Fred Rogers"
-  }
+  title_mapping = json.load(open("title_mapping.json","r"))
 
   # Creating a dictionary with specified titles as keys
   token_dictionary = {name: next((t['model_token'] for t in tts_list['models'] 
