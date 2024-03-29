@@ -5,7 +5,7 @@ from tenacity import retry, stop_after_attempt, wait_fixed
 import subprocess
 import os
 import shutil
-
+from twilio.rest import Client
 
 import streamlit as st
 import json
@@ -50,6 +50,22 @@ def upload_file_to_gcs(file_path, bucket_name, destination_blob_name):
 
 
 
+
+def initiate_call(target_phone_number = '2174807363', mp3_url='https://storage.googleapis.com/twilio_streamlit_audio_files/output.wav'):
+  # Your Twilio Account SID and Auth Token
+  client = Client(account_sid, auth_token)
+
+  # Your Twilio phone number and the number you want to call
+  twilio_phone_number = '18669485765'
+
+  # Make the call
+  call = client.calls.create(
+      to=target_phone_number,
+      from_=twilio_phone_number,
+      twiml=f'<Response><Play>{mp3_url}</Play></Response>'
+  )
+
+  print(f"Call initiated with SID: {call.sid}")
 
 def get_token_dictionary():
   tts_list = requests.get("https://api.fakeyou.com/tts/list")
