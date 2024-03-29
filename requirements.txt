@@ -1,3 +1,4 @@
 tenacity
 google-auth
 google-cloud-storage
+twilio
