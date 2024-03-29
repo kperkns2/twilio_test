@@ -108,7 +108,7 @@ def save_file_to_github(file_path):
   username = 'kperkns2'
   repository = 'twilio_test'
   email = 'kap20k4@gmail.com'
-  git_token = 'your_git_personal_access_token_here'  # Make sure to replace this with your actual Git token
+  git_token = st.secrets['git_token']
 
   # Configure git
   subprocess.run(['git', 'config', '--global', 'user.name', username], check=True)
