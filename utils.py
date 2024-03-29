@@ -12,15 +12,38 @@ import json
 from google.oauth2 import service_account
 from google.cloud import storage
 
-# Load the service account key from Streamlit secrets
-gcp_service_account_info = json.loads(st.secrets["gcp_service_account"]["key"])
+def authenticate_google():
+  # Load the service account key from Streamlit secrets
+  gcp_service_account_info = json.loads(st.secrets["gcp_service_account"]["key"])
 
-# Authenticate with the service account
-credentials = service_account.Credentials.from_service_account_info(gcp_service_account_info)
+  # Authenticate with the service account
+  credentials = service_account.Credentials.from_service_account_info(gcp_service_account_info)
 
-# Now you can use the credentials with Google Cloud Client Libraries
-# For example, initializing the storage client
-storage_client = storage.Client(credentials=credentials, project=credentials.project_id)
+  # Now you can use the credentials with Google Cloud Client Libraries
+  # For example, initializing the storage client
+  storage_client = storage.Client(credentials=credentials, project=credentials.project_id)
+  return storage_client
+
+
+def upload_file_to_gcs(file, bucket_name, destination_blob_name):
+    """
+    Uploads a file to the specified bucket.
+
+    :param file: The file to upload.
+    :param bucket_name: The ID of your GCS bucket.
+    :param destination_blob_name: The desired name of your file in the bucket.
+    """
+    # Authenticate and get the storage client
+    storage_client = authenticate_google()
+    
+    # Get the bucket
+    bucket = storage_client.bucket(bucket_name)
+    
+    # Create a new blob and upload the file's content.
+    blob = bucket.blob(destination_blob_name)
+    blob.upload_from_string(file.getvalue(), content_type=file.type)
+    
+    st.success(f"File {file.name} uploaded to {destination_blob_name}.")
 
 
 
@@ -112,45 +135,3 @@ def download_wav_if_complete(inference_job_token):
     else:
         raise Exception("Job not completed yet")
         print('Job is not in complete_success state.')
-
-
-
-
-def save_file_to_github(file_path):
-  # Save the current working directory
-  filename = os.path.basename(file_path)
-  original_directory = os.getcwd()
-
-  # Set your variables
-  username = 'kperkns2'
-  repository = 'twilio_test'
-  email = 'kap20k4@gmail.com'
-  git_token = st.secrets['git_token']
-
-  # Clone the repository
-  clone_command = f'git clone https://github.com/{username}/{repository}.git'
-  subprocess.run(clone_command, shell=True, check=True)
-
-  # Configure git
-  subprocess.run(['git', 'config', '--global', 'user.name', username], check=True)
-  subprocess.run(['git', 'config', '--global', 'user.email', email], check=True)
-
-
-
-  # Change directory to the cloned repository
-  os.chdir(f'./{repository}/')
-
-  shutil.copy(file_path, os.getcwd())
-
-  # Set the new origin with the token
-  subprocess.run(['git', 'remote', 'rm', 'origin'], check=True)
-  subprocess.run(['git', 'remote', 'add', 'origin', f'https://{git_token}@github.com/{username}/{repository}.git'], check=True)
-
-  subprocess.run(['git', 'add', filename])
-  subprocess.run(['git', 'commit', '-m', '"Added from streamlit"'])
-  subprocess.run(['git', 'push', 'origin', 'main'])
-
-
-
-  # Change back to the original directory
-  os.chdir(original_directory)

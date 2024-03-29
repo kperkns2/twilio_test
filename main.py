@@ -3,6 +3,7 @@ from utils import *
 import streamlit as st
 import os
 
+authenticate_google()
 token_dictionary = get_token_dictionary()
 
 def on_click():
@@ -14,6 +15,8 @@ def on_click():
 
     st.audio('output.wav')
     
+    bucket_id = st.secrets["bucket"]["id"]
+    upload_file_to_gcs('output.wav', bucket_id, 'output.wav')
   
 
 st.button("Click to send message!", on_click=on_click)
