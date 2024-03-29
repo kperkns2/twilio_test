@@ -10,7 +10,7 @@ def on_click():
   if inference_job_token:
     download_wav_if_complete(inference_job_token)
 
-st.button("Click me!", on_click=on_click):
+st.button("Click me!", on_click=on_click)
 
 st.write('Hello World!')
 
