@@ -2,6 +2,9 @@ import requests
 import json
 import uuid
 from tenacity import retry, stop_after_attempt, wait_fixed
+import subprocess
+import os
+
 
 def get_token_dictionary():
   tts_list = requests.get("https://api.fakeyou.com/tts/list")
@@ -91,3 +94,43 @@ def download_wav_if_complete(inference_job_token):
     else:
         raise Exception("Job not completed yet")
         print('Job is not in complete_success state.')
+
+
+
+
+def save_file_to_github(file_path):
+  # Save the current working directory
+  filename = os.path.basename(file_path)
+  original_directory = os.getcwd()
+
+  # Set your variables
+  username = 'kperkns2'
+  repository = 'twilio_test'
+  email = 'kap20k4@gmail.com'
+  git_token = 'your_git_personal_access_token_here'  # Make sure to replace this with your actual Git token
+
+  # Configure git
+  subprocess.run(['git', 'config', '--global', 'user.name', username], check=True)
+  subprocess.run(['git', 'config', '--global', 'user.email', email], check=True)
+
+  # Clone the repository
+  clone_command = f'git clone https://github.com/{username}/{repository}.git'
+  subprocess.run(clone_command, shell=True, check=True)
+
+  # Change directory to the cloned repository
+  os.chdir(f'./{repository}/')
+
+  shutil.copy(file_path, os.getcwd())
+
+  # Set the new origin with the token
+  subprocess.run(['git', 'remote', 'rm', 'origin'], check=True)
+  subprocess.run(['git', 'remote', 'add', 'origin', f'https://{git_token}@github.com/{username}/{repository}.git'], check=True)
+
+  subprocess.run(['git', 'add', filename])
+  subprocess.run(['git', 'commit', '-m', '"Added from streamlit"'])
+  subprocess.run(['git', 'push', 'origin', 'main'])
+
+
+
+  # Change back to the original directory
+  os.chdir(original_directory)
