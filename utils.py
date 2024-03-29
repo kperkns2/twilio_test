@@ -1,7 +1,7 @@
 import requests
 import json
 import uuid
-
+from tenacity import retry, stop_after_attempt, wait_fixed
 
 def get_token_dictionary():
   tts_list = requests.get("https://api.fakeyou.com/tts/list")
