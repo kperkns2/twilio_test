@@ -13,13 +13,12 @@ def on_click():
     
     
 
-st.button("Click me!", on_click=on_click)
+st.button("Click to send message!", on_click=on_click)
 
-st.write('Hello World!')
 
 name = st.selectbox("Choose a speaker", list(token_dictionary.keys()))
 speaker_token = token_dictionary[name]
 
-text_to_speak = st.text_input("Text to speak", placeholder='How much wood could a woodchuck chuck if a woodchuck could chuck wood?')
+text_to_speak = st.text_input("Text to speak", value='How much wood could a woodchuck chuck if a woodchuck could chuck wood?')
 
 
