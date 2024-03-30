@@ -68,6 +68,7 @@ def initiate_call(target_phone_number, url_list):
     twiml_str = '<Response>'
     for url in url_list:
         url = st.secrets['bucket']['url'] + url
+        st.write(url)
         twiml_str += f'<Play>{url}</Play><Pause length="1"/>'
     twiml_str += '</Response>'
 

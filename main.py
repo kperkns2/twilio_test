@@ -8,8 +8,10 @@ authenticate_google()
 token_dictionary = get_token_dictionary()
 
 # A list to hold dictionaries of text and speaker tokens
-st.session_state['text_speaker_pairs'] = []
-st.session_state['audio_filenames'] = []
+if 'text_speaker_pairs' not in st.session_state:
+    st.session_state['text_speaker_pairs'] = []
+if 'audio_filenames' not in st.session_state:
+    st.session_state['audio_filenames'] = []
 
 
 def add_to_list():
