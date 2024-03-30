@@ -33,34 +33,28 @@ def add_to_list():
 
 
 
-def generate_narrator_script():
-    """Generates a narrator script that fills in the gaps between each set of text."""
-    # Placeholder for the function that would call the OpenAI API
-    # Assuming it returns a string of the generated narrator script
-    narrator_script = chatgpt_complete(text_speaker_pairs)
-    st.text(narrator_script)
-
-
 def on_click_send_message():
     """Processes the current text and speaker, uploads the result, and possibly initiates a call."""
     st.write("Processing...")
     initiate_call(target_phone_number=phone_number, url_list=audio_filenames)
 
 # Streamlit UI Components
-st.title("Narrator and Speaker Script Generator")
+st.title("Text to Speech & Twilio")
 
 name = st.selectbox("Choose a speaker", list(token_dictionary.keys()))
 speaker_token = token_dictionary[name]
-phone_number = st.text_input("Phone number to call", value='2174807363')
+
 
 text_to_speak = st.text_input("Text to speak",
                               value='How much wood could a woodchuck chuck if a woodchuck could chuck wood?')
-
-st.button("Click to send message!", on_click=on_click_send_message)
 st.button("Add to List", on_click=add_to_list)
 
-if st.button("Generate Narrator Script"):
-    generate_narrator_script()
+st.divider()
+
+phone_number = st.text_input("Phone number to call", value='2174807363')
+st.button("Click to send message!", on_click=on_click_send_message)
+
+
 
 
 # Define the chatgpt_complete function as a placeholder. This should be replaced with actual API call.
