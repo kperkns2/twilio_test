@@ -53,10 +53,10 @@ def upload_file_to_gcs(file_path, bucket_name, destination_blob_name):
 
 def initiate_call(target_phone_number = '2174807363', mp3_url='https://storage.googleapis.com/twilio_streamlit_audio_files/output.wav'):
   # Your Twilio Account SID and Auth Token
-  client = Client(account_sid, auth_token)
+  client = Client(st.secrets['twilio']['account_sid'], st.secrets['twilio']['auth_token'])
 
   # Your Twilio phone number and the number you want to call
-  twilio_phone_number = '18669485765'
+  twilio_phone_number = st.secrets['twilio']['twilio_phone_number'] #'18669485765'
 
   # Make the call
   call = client.calls.create(
