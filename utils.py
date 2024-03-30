@@ -51,21 +51,34 @@ def upload_file_to_gcs(file_path, bucket_name, destination_blob_name):
 
 
 
-def initiate_call(target_phone_number = '2174807363', mp3_url='https://storage.googleapis.com/twilio_streamlit_audio_files/output.wav'):
-  # Your Twilio Account SID and Auth Token
-  client = Client(st.secrets['twilio']['account_sid'], st.secrets['twilio']['auth_token'])
+def initiate_call(target_phone_number, url_list):
+    """
+    Initiates a call that plays a list of MP3 files with a 1-second pause between each.
 
-  # Your Twilio phone number and the number you want to call
-  twilio_phone_number = st.secrets['twilio']['twilio_phone_number'] #'18669485765'
+    :param target_phone_number: The phone number to call.
+    :param mp3_urls: A list of URLs pointing to the MP3 files to be played.
+    """
+    # Your Twilio Account SID and Auth Token
+    client = Client(st.secrets['twilio']['account_sid'], st.secrets['twilio']['auth_token'])
 
-  # Make the call
-  call = client.calls.create(
-      to=target_phone_number,
-      from_=twilio_phone_number,
-      twiml=f'<Response><Play>{mp3_url}</Play></Response>'
-  )
+    # Your Twilio phone number
+    twilio_phone_number = st.secrets['twilio']['twilio_phone_number']
 
-  print(f"Call initiated with SID: {call.sid}")
+    # Construct TwiML to play each MP3 file with a 1-second pause between each
+    twiml_str = '<Response>'
+    for url in url_list:
+        url = st.secrets['bucket']['url'] + url
+        twiml_str += f'<Play>{url}</Play><Pause length="1"/>'
+    twiml_str += '</Response>'
+
+    # Make the call
+    call = client.calls.create(
+        to=target_phone_number,
+        from_=twilio_phone_number,
+        twiml=twiml_str
+    )
+
+    print(f"Call initiated with SID: {call.sid}")
 
 def get_token_dictionary():
   tts_list = requests.get("https://api.fakeyou.com/tts/list")
@@ -125,7 +138,7 @@ def fetch_job_result(inference_job_token):
     return response_data
 
 @retry(stop=stop_after_attempt(15), wait=wait_fixed(3))
-def download_wav_if_complete(inference_job_token):
+def download_wav_if_complete(inference_job_token, filename):
     job_result = fetch_job_result(inference_job_token)
     # Check if the job completed successfully
     if job_result.get('success') and job_result['state']['status'] == 'complete_success':
@@ -138,10 +151,9 @@ def download_wav_if_complete(inference_job_token):
         response = requests.get(wav_url)
         if response.status_code == 200:
             # Define where you want to save the WAV file, e.g., "output.wav"
-            file_path = 'output.wav'
-            with open(file_path, 'wb') as file:
+            with open(filename, 'wb') as file:
                 file.write(response.content)
-            print(f'File successfully downloaded to {file_path}')
+            print(f'File successfully downloaded to {filename}')
         else:
             # Print detailed error information
             print(f'Failed to download the WAV file. HTTP Status Code: {response.status_code}')
