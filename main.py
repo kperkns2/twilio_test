@@ -19,7 +19,7 @@ def add_to_list():
         "speaker_token": speaker_token
     })
 
-    filename = f"output_{str(random.rand(10))}.wav"
+    filename = f"output_{str.zfill(str(random.randint(0,1000000000)),10)}.wav"
 
     inference_job_token = make_initial_request(tts_model_token=speaker_token, inference_text=text_to_speak)
     if inference_job_token:
