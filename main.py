@@ -8,13 +8,13 @@ authenticate_google()
 token_dictionary = get_token_dictionary()
 
 # A list to hold dictionaries of text and speaker tokens
-text_speaker_pairs = []
-audio_filenames = []
+st.session_state['text_speaker_pairs'] = []
+st.session_state['audio_filenames'] = []
 
 
 def add_to_list():
     """Adds the current text and speaker token to the list."""
-    text_speaker_pairs.append({
+    st.session_state['text_speaker_pairs'].append({
         "text": text_to_speak,
         "speaker_token": speaker_token
     })
@@ -29,14 +29,14 @@ def add_to_list():
         bucket_id = st.secrets["bucket"]["id"]
         upload_file_to_gcs(filename, bucket_id, filename)
 
-        audio_filenames.append(audio_filenames)
+        st.session_state['audio_filenames'].append(filename)
 
 
 
 def on_click_send_message():
     """Processes the current text and speaker, uploads the result, and possibly initiates a call."""
     st.write("Processing...")
-    initiate_call(target_phone_number=phone_number, url_list=audio_filenames)
+    initiate_call(target_phone_number=phone_number, url_list=st.session_state['audio_filenames'])
 
 # Streamlit UI Components
 st.title("Text to Speech & Twilio")
